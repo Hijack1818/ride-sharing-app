@@ -51,4 +51,22 @@ public class RideController {
         }
         return ResponseEntity.ok(rideService.getAvailableRides(lat, lng, radius));
     }
+
+    @GetMapping("/active/passenger/{id}")
+    public ResponseEntity<Ride> getActiveRideForPassenger(@PathVariable @NonNull String id) {
+        Ride ride = rideService.getActiveRideForPassenger(id);
+        if (ride != null) {
+            return ResponseEntity.ok(ride);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/active/driver/{id}")
+    public ResponseEntity<Ride> getActiveRideForDriver(@PathVariable @NonNull String id) {
+        Ride ride = rideService.getActiveRideForDriver(id);
+        if (ride != null) {
+            return ResponseEntity.ok(ride);
+        }
+        return ResponseEntity.noContent().build();
+    }
 }

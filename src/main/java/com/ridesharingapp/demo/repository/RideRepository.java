@@ -16,4 +16,8 @@ public interface RideRepository extends JpaRepository<Ride, String> {
     long countByDriverIdAndStatusIn(String driverId, List<Ride.RideStatus> statuses);
 
     List<Ride> findByStatus(Ride.RideStatus status);
+
+    java.util.Optional<Ride> findByPassengerIdAndStatusIn(String passengerId, List<Ride.RideStatus> statuses);
+
+    java.util.Optional<Ride> findByDriverIdAndStatusIn(String driverId, List<Ride.RideStatus> statuses);
 }

@@ -167,6 +167,17 @@ public class RideService {
                         + location.getLongitude());
     }
 
+    public Ride getActiveRideForPassenger(@NonNull String passengerId) {
+        List<Ride.RideStatus> activeStatuses = List.of(Ride.RideStatus.REQUESTED, Ride.RideStatus.MATCHING,
+                Ride.RideStatus.ACCEPTED, Ride.RideStatus.IN_PROGRESS);
+        return rideRepository.findByPassengerIdAndStatusIn(passengerId, activeStatuses).orElse(null);
+    }
+
+    public Ride getActiveRideForDriver(@NonNull String driverId) {
+        List<Ride.RideStatus> activeStatuses = List.of(Ride.RideStatus.ACCEPTED, Ride.RideStatus.IN_PROGRESS);
+        return rideRepository.findByDriverIdAndStatusIn(driverId, activeStatuses).orElse(null);
+    }
+
     @Transactional
     @CachePut(value = "rides", key = "#result.id")
     public Ride acceptRide(@NonNull String rideId, @NonNull String driverId) {
