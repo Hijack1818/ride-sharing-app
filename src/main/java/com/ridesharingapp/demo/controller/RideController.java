@@ -45,13 +45,7 @@ public class RideController {
     public ResponseEntity<java.util.List<Ride>> getAvailableRides(
             @RequestParam(required = false) Double lat,
             @RequestParam(required = false) Double lng,
-            @RequestParam(defaultValue = "5000.0") Double radius) { // Default 5000 km so it behaves like "all" if not
-                                                                    // confusing, but user wants strict filtering.
-        // Actually, user said "if in that location there is a requested ride then only
-        // show"
-        // So if lat/lng are missing, maybe we returns empty or all?
-        // Let's return empty if no location provided to enforce "driver must update
-        // location" behavior
+            @RequestParam(defaultValue = "5.0") Double radius) {
         if (lat == null || lng == null) {
             return ResponseEntity.ok(java.util.Collections.emptyList());
         }
