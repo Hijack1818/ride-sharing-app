@@ -1,5 +1,8 @@
 package com.ridesharingapp.demo.model;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,7 +19,7 @@ import jakarta.persistence.Table;
         @Index(name = "idx_ride_passenger_id", columnList = "passengerId"),
         @Index(name = "idx_ride_driver_id", columnList = "driverId")
 })
-public class Ride implements java.io.Serializable {
+public class Ride implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -60,7 +63,7 @@ public class Ride implements java.io.Serializable {
         this.dropoffLat = dropoffLat;
         this.dropoffLng = dropoffLng;
         this.status = RideStatus.REQUESTED;
-        this.createdAt = java.time.LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     // Getters and Setters
@@ -68,7 +71,7 @@ public class Ride implements java.io.Serializable {
         return createdAt;
     }
 
-    public void setCreatedAt(java.time.LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 

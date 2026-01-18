@@ -16,9 +16,13 @@ import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.cache.annotation.CachePut;
@@ -26,7 +30,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@org.springframework.scheduling.annotation.EnableScheduling
+@EnableScheduling
 public class RideService {
 
     private final RideRepository rideRepository;
@@ -38,8 +42,8 @@ public class RideService {
         this.redisTemplate = redisTemplate;
     }
 
-    // Run every minute to check for expired rides
-    @org.springframework.scheduling.annotation.Scheduled(fixedRate = 60000)
+    // Run every 10 seconds to check for expired rides
+    @Scheduled(fixedRate = 10000)
     public void checkRideTimeouts() {
         java.time.LocalDateTime cutoff = java.time.LocalDateTime.now().minusMinutes(5);
         List<Ride> expiredRides = rideRepository.findAllByStatusAndCreatedAtBefore(Ride.RideStatus.REQUESTED, cutoff);
@@ -80,7 +84,7 @@ public class RideService {
 
         if (idempotencyKey != null) {
             redisTemplate.opsForValue().setIfAbsent("idempotency:" + idempotencyKey, ride.getId(),
-                    java.time.Duration.ofHours(24));
+                    Duration.ofHours(24));
         }
 
         // Broadcast to all nearby drivers
@@ -166,7 +170,7 @@ public class RideService {
         if (ride != null) {
             ride.setStatus(Ride.RideStatus.COMPLETED);
 
-            long durationMinutes = java.time.Duration.between(ride.getCreatedAt(), java.time.LocalDateTime.now())
+            long durationMinutes = Duration.between(ride.getCreatedAt(), LocalDateTime.now())
                     .toMinutes();
             if (durationMinutes < 5)
                 durationMinutes = 5;
