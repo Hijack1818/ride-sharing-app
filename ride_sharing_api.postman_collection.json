@@ -1,0 +1,251 @@
+{
+    "info": {
+        "_postman_id": "b1c2a83c-a4a3-45a4-b94b-9bb5fb3d4117",
+        "name": "Ride Sharing API",
+        "description": "API collection for the Ride Sharing Application, covering Ride Lifecycle, Driver Updates, and Payments.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "basic",
+        "basic": [
+            {
+                "key": "password",
+                "value": "password",
+                "type": "string"
+            },
+            {
+                "key": "username",
+                "value": "admin",
+                "type": "string"
+            }
+        ]
+    },
+    "item": [
+        {
+            "name": "Drivers",
+            "item": [
+                {
+                    "name": "Update Location",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"latitude\": 37.7749,\n    \"longitude\": -122.4194\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/v1/drivers/driver_01/location",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "v1",
+                                "drivers",
+                                "driver_01",
+                                "location"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Accept Ride",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8080/v1/drivers/driver_01/accept?rideId={{rideId}}",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "v1",
+                                "drivers",
+                                "driver_01",
+                                "accept"
+                            ],
+                            "query": [
+                                {
+                                    "key": "rideId",
+                                    "value": "{{rideId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Rides",
+            "item": [
+                {
+                    "name": "Create Ride",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "pm.environment.set(\"rideId\", jsonData.id);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Idempotency-Key",
+                                "value": "{{$guid}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"passengerId\": \"user_01\",\n  \"pickupLat\": 37.7749,\n  \"pickupLng\": -122.4194,\n  \"dropoffLat\": 37.8044,\n  \"dropoffLng\": -122.2712,\n  \"pickupLocation\": \"Market St\",\n  \"dropoffLocation\": \"Oakland\",\n  \"tier\": \"STANDARD\",\n  \"paymentMethod\": \"CARD\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/v1/rides",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "v1",
+                                "rides"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Ride",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8080/v1/rides/{{rideId}}",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "v1",
+                                "rides",
+                                "{{rideId}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Trips",
+            "item": [
+                {
+                    "name": "End Trip",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8080/v1/trips/{{rideId}}/end",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "v1",
+                                "trips",
+                                "{{rideId}}",
+                                "end"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Receipt",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8080/v1/trips/{{rideId}}/receipt",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "v1",
+                                "trips",
+                                "{{rideId}}",
+                                "receipt"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Payments",
+            "item": [
+                {
+                    "name": "Process Payment",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"rideId\": \"{{rideId}}\",\n    \"amount\": 25.50,\n    \"method\": \"CARD\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/v1/payments",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "v1",
+                                "payments"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "rideId",
+            "value": ""
+        }
+    ]
+}
