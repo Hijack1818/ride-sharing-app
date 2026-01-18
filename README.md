@@ -118,6 +118,19 @@ When the destination is reached.
 
 
 ---
+## Architectural Decisions
+**"Hybrid Data Strategy:"**
+
+*   MySQL is the "Source of Truth". We use it for anything that involves billing, audit trails, or complex state transitions.
+*   Redis is the "Operational Store". We treat Driver Locations as ephemeral data. If Redis crashes, we simple wait for the next location update (within seconds) rather than trying to persist every coordinate to     disk.
+
+**"Asynchronous Ingestion:"**
+*   The updateLocation endpoint is designed as "Fire-and-Forget". The Controller immediately returns 200 OK to the driver app while a separate thread pool handles the Redis write. This prevents the driver app        from freezing if the network is momentarily slow and protects the Tomcat request threads from saturation.
+
+**"Optimistic Concurrency:"**
+*   We utilize @Version on the Ride entity. This creates a highly scalable locking mechanism at the database level without the performance penalty of SELECT FOR UPDATE.
+ 
+---
 
 ## Troubleshooting
 
