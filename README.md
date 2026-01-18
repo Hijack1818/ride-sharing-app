@@ -113,6 +113,11 @@ When the destination is reached.
 *   `exception/`: Handles errors globally so users get clean messages.
 
 ---
+## HLD
+<img width="4000" height="7973" alt="Ride Service with Redis Flow-2026-01-18-163807" src="https://github.com/user-attachments/assets/661b4920-ae0b-4b91-9b40-5ede09bf85e2" />
+
+
+---
 
 ## Troubleshooting
 
