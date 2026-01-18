@@ -14,4 +14,6 @@ public interface RideRepository extends JpaRepository<Ride, String> {
 
     // Check if driver is already on an active ride
     long countByDriverIdAndStatusIn(String driverId, List<Ride.RideStatus> statuses);
+
+    List<Ride> findByStatus(Ride.RideStatus status);
 }

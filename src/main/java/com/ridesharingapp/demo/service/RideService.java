@@ -134,6 +134,30 @@ public class RideService {
         return rideRepository.findById(id).orElse(null);
     }
 
+    @Transactional(readOnly = true)
+    public List<Ride> getAvailableRides(@NonNull Double lat, @NonNull Double lng, double radiusKm) {
+        List<Ride> allRequested = rideRepository.findByStatus(Ride.RideStatus.REQUESTED);
+        return allRequested.stream()
+                .filter(ride -> {
+                    if (ride.getPickupLat() == null || ride.getPickupLng() == null)
+                        return false;
+                    double distance = calculateDistance(lat, lng, ride.getPickupLat(), ride.getPickupLng());
+                    return distance <= radiusKm;
+                })
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Radius of the earth
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                        * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // convert to kilometers
+    }
+
     @Async
     public void updateDriverLocation(@NonNull String driverId, @NonNull LocationUpdate location) {
         redisTemplate.opsForGeo().add(DRIVER_GEO_KEY, new Point(location.getLongitude(), location.getLatitude()),

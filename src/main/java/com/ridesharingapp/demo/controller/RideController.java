@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/v1/rides")
@@ -38,5 +39,22 @@ public class RideController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(ride);
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<java.util.List<Ride>> getAvailableRides(
+            @RequestParam(required = false) Double lat,
+            @RequestParam(required = false) Double lng,
+            @RequestParam(defaultValue = "5000.0") Double radius) { // Default 5000 km so it behaves like "all" if not
+                                                                    // confusing, but user wants strict filtering.
+        // Actually, user said "if in that location there is a requested ride then only
+        // show"
+        // So if lat/lng are missing, maybe we returns empty or all?
+        // Let's return empty if no location provided to enforce "driver must update
+        // location" behavior
+        if (lat == null || lng == null) {
+            return ResponseEntity.ok(java.util.Collections.emptyList());
+        }
+        return ResponseEntity.ok(rideService.getAvailableRides(lat, lng, radius));
     }
 }
